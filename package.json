@@ -1,0 +1,62 @@
+{
+  "name": "logicflow",
+  "version": "3.0.0",
+  "description": "A simpler way to keep your folders organized",
+  "author": "Cisik",
+  "private": true,
+  "main": "src/main.cjs",
+  "scripts": {
+    "css": "tailwindcss -i src/styles.css -o src/app.css --minify",
+    "start": "npm run css && electron .",
+    "dist": "npm run css && electron-builder --win --dir --x64 && node scripts/brand-exe.cjs && node scripts/build-installer.cjs",
+    "test": "node --test test/*.test.cjs"
+  },
+  "devDependencies": {
+    "electron": "44.4.3",
+    "electron-builder": "26.15.3",
+    "tailwindcss": "3.4.19",
+    "resedit": "3.0.2",
+    "pe-library": "2.0.1"
+  },
+  "build": {
+    "appId": "com.cisik.logicflow",
+    "productName": "LogicFlow",
+    "copyright": "Copyright \u00a9 2026 Cisik",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "engine",
+        "to": "engine",
+        "filter": [
+          "Engine.ps1",
+          "Worker.ps1"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "LogicFlow",
+      "artifactName": "LogicFlow-Setup.exe",
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+const {app,BrowserWindow}=require('electron');app.whenReady().then(()=>{const w=new BrowserWindow({width:1280,height:930,webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true}});w.loadURL('about:blank');});
