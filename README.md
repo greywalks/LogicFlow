@@ -4,6 +4,10 @@
 
 ## Install
 
+**[Download LogicFlow-Setup.exe](https://github.com/greywalks/LogicFlow/releases/latest/download/LogicFlow-Setup.exe)**
+
+Download the installer above; GitHub’s **Code → Download ZIP** contains developer source files.
+
 1. Exit any open copy of LogicFlow using its app or notification-area menu.
 2. Double-click **LogicFlow-Setup.exe** and follow the installer.
 3. Open LogicFlow, choose your folders and finish setup.
