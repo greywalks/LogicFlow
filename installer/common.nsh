@@ -9,12 +9,12 @@ SetCompressor /SOLID zlib
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\LogicFlow"
 InstallDir "$LOCALAPPDATA\Programs\LogicFlow"
 Icon "..\assets\icon.ico"
-VIProductVersion "3.0.0.0"
+VIProductVersion "3.1.0.0"
 VIAddVersionKey /LANG=1033 "ProductName" "LogicFlow"
 VIAddVersionKey /LANG=1033 "CompanyName" "Cisik"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "Copyright © 2026 Cisik"
-VIAddVersionKey /LANG=1033 "FileVersion" "3.0.0"
-VIAddVersionKey /LANG=1033 "ProductVersion" "3.0.0"
+VIAddVersionKey /LANG=1033 "FileVersion" "3.1.0"
+VIAddVersionKey /LANG=1033 "ProductVersion" "3.1.0"
 !define MUI_ICON "..\assets\icon.ico"
 !define MUI_ABORTWARNING
 Function CheckRunning

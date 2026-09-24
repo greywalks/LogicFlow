@@ -1,4 +1,4 @@
-# LogicFlow 3.0
+# LogicFlow 3.1
 
 **Author: Cisik** · Windows 11, 64-bit
 
@@ -101,9 +101,33 @@ initial watched folder. Other users receive a fresh setup. The installer removes
 the older LogicFlow startup shortcut; set your sign-in preference in the new app.
 No other applications' profiles are imported.
 
-Export/import transfers only rules and file categories. It does not transfer
-watch locations, output locations, excluded folders, startup choices or history.
-Distribute the installer, not your personal settings or rule exports.
+## Import and export rules
+
+Open **Import & export** in the left menu.
+
+- **Export rules** saves your current name groups, custom rules in their order,
+  file-type folders and file-type fallback choice to a `.json` file. Unsaved
+  edits shown in the app are included. Copy this file to the other computer.
+- **Import rules** opens a file picker, pauses organizing, validates the file,
+  and shows its groups and rule counts. Select **Use these rules** to replace
+  the current sorting choices, then **Save changes**. Open **Overview**, refresh
+  the preview and check the destinations before starting.
+- First-time users can import on setup step 2, **File types**, after choosing
+  their local folders. Continue setup to review and save the imported choices.
+
+Import replaces groups, custom rules, file types and the fallback choice; it
+keeps this computer's watch folder, output folders, exclusions, sign-in choice,
+protected locations and activity. Canceling the review keeps your current edits.
+Invalid files leave your rules unchanged. Import always leaves organizing paused.
+Version-1 rules exports from LogicFlow 3.0 are accepted, including UTF-8 BOM files.
+The file size limit is 500 KB. Rules are data only and cannot contain absolute
+output paths or paths that escape the organized-files folder.
+
+The separate optional `examples/LogicFlow-Original-Rules.json` contains the
+original requested personal sorting layout. Its companion README explains
+all mappings. It is never loaded automatically or used as a new user's defaults.
+Share the installer for a clean setup, and share a rules JSON only when you want
+another person or computer to use those sorting choices.
 
 Remove LogicFlow through Windows **Settings → Apps → Installed apps**. Uninstall
 keeps settings, history and organized files. The uninstaller stages a small
@@ -111,17 +135,11 @@ copy in the Windows temporary folder so it can remove the installed app.
 
 ## Verification
 
-- 75 isolated PowerShell engine checks pass.
-- Seven Node tests pass for settings, migration, rule transfer and real worker IPC.
-- Electron-rendered setup, rule editing, exclusions, navigation and preview tested
-  at 1280×900 and 980×720; screenshots inspected.
-- Main-process/preload/PowerShell integration tested on Linux; Windows singleton
-  and native folder-picker interactions are mocked in that harness.
-- Installer compiled as a Windows executable and its payload checked.
-
-Native Windows installation/uninstallation, PowerShell 5.1 behavior, sign-in
-startup, tray behavior, DPI scaling and Windows file locks still require Windows
-validation. This is not a claim of full Windows runtime testing.
+This release includes Node unit tests for portable rule transfer and validation,
+real-worker routing checks for the supplied rule file, PowerShell engine checks,
+and Electron UI/integration harnesses. See `VERIFICATION.md` for the results and
+platform limits of this build. Native Windows installation and PowerShell 5.1
+behavior require Windows validation.
 
 ## Build from source (developers only)
 
@@ -156,7 +174,7 @@ Use the contents of this `Source` folder as the repository root: `package.json`,
 `scripts/`, `test/` and `qa/`. Include the `.gitignore` file.
 Dependencies and generated installers are excluded from Git. Distribute
 `LogicFlow-Setup.exe` as a release download separately from the source.
-No GitHub repository has been created or published by this update.
+Repository: https://github.com/greywalks/LogicFlow
 
 ## Icon update
 

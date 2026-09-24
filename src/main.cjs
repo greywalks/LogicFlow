@@ -1,10 +1,11 @@
-// LogicFlow 3.0 | Author: Cisik
+// LogicFlow 3.1 | Author: Cisik
 const {app,BrowserWindow,ipcMain,dialog,Tray,Menu,nativeImage,shell,session}=require('electron');
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const {pathToFileURL}=require('node:url');
 const {Worker}=require('./worker.cjs');
 const {normalize,exportRules,importRules,protectPrevious,saveAtomic,inside}=require('./config.cjs');
+const {MAX_RULE_BYTES,parseRules}=require('./rules.cjs');
 app.setName('LogicFlow');
 let window,tray,worker,config,defaults,dataDir,settings,history,desktop,quitting=false,running=false,moved=0,lastCheck=null,lastError='',task=Promise.resolve();
 const serialize=fn=>{const result=task.then(fn);task=result.catch(()=>{});return result;};
@@ -84,8 +85,32 @@ async function boot(){
   handle('preview',async c=>{await pause();await validate(c);return await worker.send('preview',{config:safeConfig(c)});});
   handle('start',async()=>{if(!config)throw new Error('Finish setup first.');await validate(config);await worker.send('initialize',{config:safeConfig(config)});running=true;lastError='';await cycle();return getState();});
   handle('history',()=>worker.send('history',{log:history}));
-  handle('export',async c=>{await validate(c);const result=await dialog.showSaveDialog(window,{title:'Save a copy of your rules',defaultPath:'LogicFlow-Rules.json',filters:[{name:'LogicFlow rules',extensions:['json']}]});if(result.canceled)return false;await fs.writeFile(result.filePath,JSON.stringify(exportRules(c),null,2));return true;});
-  handle('import',async c=>{await pause();const result=await dialog.showOpenDialog(window,{title:'Choose a LogicFlow rules file',properties:['openFile'],filters:[{name:'LogicFlow rules',extensions:['json']}]});if(result.canceled)return null;const stat=await fs.stat(result.filePaths[0]);if(stat.size>500000)throw new Error('Choose a rules file smaller than 500 KB.');const updated=importRules(c,JSON.parse((await fs.readFile(result.filePaths[0],'utf8')).replace(/^\uFEFF/,'')));await validate(updated);return updated;});
+  handle('export',async c=>{
+    const rules=exportRules(c);
+    const result=await dialog.showSaveDialog(window,{title:'Export LogicFlow rules',defaultPath:'LogicFlow-Rules.json',filters:[{name:'LogicFlow rules',extensions:['json']}]});
+    if(result.canceled)return false;
+    await fs.writeFile(result.filePath,JSON.stringify(rules,null,2),'utf8');return true;
+  });
+  handle('import',async c=>{
+    await pause();
+    const result=await dialog.showOpenDialog(window,{title:'Import LogicFlow rules',properties:['openFile'],filters:[{name:'LogicFlow rules',extensions:['json']}]});
+    if(result.canceled)return null;
+    const file=await fs.open(result.filePaths[0],'r');
+    let content;
+    try {
+      const stat=await file.stat();
+      if(!stat.isFile())throw new Error('Choose a LogicFlow rules JSON file.');
+      if(stat.size>MAX_RULE_BYTES)throw new Error('Choose a rules file smaller than 500 KB.');
+      // Bounded even if the selected file grows after stat().
+      const buffer=Buffer.alloc(MAX_RULE_BYTES+1);let size=0;
+      while(size<buffer.length){const read=await file.read(buffer,size,buffer.length-size,null);if(!read.bytesRead)break;size+=read.bytesRead;}
+      if(size>MAX_RULE_BYTES)throw new Error('Choose a rules file smaller than 500 KB.');
+      content=buffer.subarray(0,size).toString('utf8');
+    } finally {await file.close();}
+    const updated=importRules(c,parseRules(content));
+    await validate(updated);
+    return {config:updated,filename:path.basename(result.filePaths[0])};
+  });
   handle('open-folder',async which=>{const c=config||defaults;const target={watch:c.WatchFolder,organized:c.Destination,unclassified:c.Unclassified}[which];if(!target)throw new Error('Unknown folder.');const error=await shell.openPath(target);if(error)throw new Error('This folder has not been created yet. It will be created when you start organizing.');});
   handle('exit',()=>{quitting=true;app.quit();});
   await window.loadFile(uiPath);

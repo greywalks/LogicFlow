@@ -1,0 +1,186 @@
+{
+  "Version": 1,
+  "Groups": [
+    {
+      "Folder": "AMC",
+      "Aliases": "AMC"
+    },
+    {
+      "Folder": "Hisense",
+      "Aliases": "Hisense"
+    },
+    {
+      "Folder": "IT",
+      "Aliases": "IT"
+    },
+    {
+      "Folder": "Philips",
+      "Aliases": "Philips"
+    },
+    {
+      "Folder": "Promethean",
+      "Aliases": "Promethean"
+    },
+    {
+      "Folder": "Samsung",
+      "Aliases": "Samsung"
+    },
+    {
+      "Folder": "TCL",
+      "Aliases": "TCL"
+    },
+    {
+      "Folder": "USSI",
+      "Aliases": "USSI"
+    }
+  ],
+  "Rules": [
+    {
+      "Priority": 1,
+      "Scope": "*",
+      "Words": "contract;contracts",
+      "Subfolder": "Contracts",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 2,
+      "Scope": "AMC",
+      "Words": "invoice;invoices",
+      "Subfolder": "Invoices",
+      "Dated": true,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 3,
+      "Scope": "Hisense",
+      "Words": "invoice;invoices",
+      "Subfolder": "Invoices",
+      "Dated": true,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 4,
+      "Scope": "Philips",
+      "Words": "invoice;invoices",
+      "Subfolder": "Invoices",
+      "Dated": true,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 5,
+      "Scope": "Promethean",
+      "Words": "invoice;invoices",
+      "Subfolder": "Invoices",
+      "Dated": true,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 6,
+      "Scope": "Samsung",
+      "Words": "invoice;invoices",
+      "Subfolder": "Invoices",
+      "Dated": true,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 7,
+      "Scope": "TCL",
+      "Words": "invoice;invoices",
+      "Subfolder": "Invoices",
+      "Dated": true,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 8,
+      "Scope": "AMC",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 9,
+      "Scope": "Hisense",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 10,
+      "Scope": "IT",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 11,
+      "Scope": "Philips",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 12,
+      "Scope": "Promethean",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 13,
+      "Scope": "Samsung",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 14,
+      "Scope": "TCL",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    },
+    {
+      "Priority": 15,
+      "Scope": "USSI",
+      "Words": "guide;guides",
+      "Subfolder": "Guides",
+      "Dated": false,
+      "Kind": "Files"
+    }
+  ],
+  "Extensions": [
+    {
+      "Extensions": ".zip;.7z;.rar;.gz;.tar;.msi;.exe;.iso",
+      "Folder": "Downloads"
+    },
+    {
+      "Extensions": ".xlsx;.xls;.xlsm;.xlsb;.xltx;.xltm;.csv;.tsv;.ods",
+      "Folder": "Excel"
+    },
+    {
+      "Extensions": ".png;.jpg;.jpeg;.gif;.bmp;.tif;.tiff;.webp;.svg;.heic;.ico",
+      "Folder": "Images"
+    },
+    {
+      "Extensions": ".pdf",
+      "Folder": "PDF"
+    },
+    {
+      "Extensions": ".doc;.docx;.docm;.dot;.dotx;.rtf;.odt;.txt;.md",
+      "Folder": "Word"
+    },
+    {
+      "Extensions": ".zpl",
+      "Folder": "ZPL"
+    }
+  ],
+  "RootCategories": false
+}

@@ -1,6 +1,7 @@
 // LogicFlow | Author: Cisik
 const path = require('node:path');
 const fs = require('node:fs/promises');
+const {validateRules} = require('./rules.cjs');
 const clone = value => JSON.parse(JSON.stringify(value));
 const inside = (child, parent) => { const rel = path.relative(path.resolve(parent).toLowerCase(), path.resolve(child).toLowerCase()); return rel === '' || (!rel.startsWith('..' + path.sep) && rel !== '..' && !path.isAbsolute(rel)); };
 function normalize(input, desktop) {
@@ -13,11 +14,10 @@ function normalize(input, desktop) {
   return c;
 }
 function exportRules(c) {
-  return clone({Version:1, Groups:c.Groups, Rules:c.Rules, Extensions:c.Extensions, RootCategories:c.RootCategories});
+  return validateRules(c);
 }
 function importRules(c, input) {
-  if (input.Version !== 1 || !['Groups','Rules','Extensions'].every(k => Array.isArray(input[k]))) throw new Error('Choose a LogicFlow rules file.');
-  return {...clone(c), ...exportRules({...input, RootCategories:!!input.RootCategories}), Enabled:false};
+  return {...clone(c), ...validateRules(input), Enabled:false};
 }
 function protectPrevious(candidate, existing) {
   const c = clone(candidate);

@@ -1,15 +1,22 @@
 # LogicFlow — Project Brief
 
-**Release:** 3.0.0  
+**Release:** 3.1.0  
 **Author:** Cisik  
 **Target:** Windows 11 x64  
-**Deliverable:** LogicFlow-Setup.exe; LogicFlow-v3.0-Source.zip
+**Deliverable:** LogicFlow-Setup.exe; LogicFlow-v3.1-Complete.zip
 
 ## Product
 
 Per-user folder organizer with an Electron desktop window, compiled Tailwind
 styles, native folder pickers and a PowerShell worker. This replaces the prior
 Windows Forms interface. It is a desktop app, not a Flask server or website.
+
+## Rule transfer added in 3.1
+
+Dedicated Import & export navigation, import during setup, a review before rule
+replacement, clear invalid-file errors, and strict portable-only field validation.
+Each computer keeps its own paths, exclusions, protections and sign-in choice.
+The optional original-rules JSON is supplied separately, never auto-loaded.
 
 ## Implemented changes
 
@@ -73,12 +80,6 @@ Node, npm, Flask, Python, or a separate browser.
 
 ## Verification and remaining work
 
-75 isolated engine checks and seven Node tests pass. Electron-rendered UI flows
-were exercised at normal and compact sizes, and screenshots inspected. Main,
-preload and PowerShell integration passed in a Linux test harness. Native dialogs
-and the Windows singleton are mocked in that harness, not verified on Windows.
-Installer payload and executable metadata checked after building.
-
-Next validation is on Windows: install/uninstall, first launch and upgrade,
-PowerShell 5.1 worker, native pickers, sign-in startup, tray, locks and high DPI.
-Do not claim Windows certification or native runtime verification yet.
+Current build verification and platform limits are recorded in `VERIFICATION.md`.
+Windows installation/uninstallation, PowerShell 5.1, native pickers, sign-in
+startup, tray, file locks and high-DPI behavior require native Windows validation.
