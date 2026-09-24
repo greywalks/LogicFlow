@@ -1,15 +1,22 @@
 # LogicFlow — Project Brief
 
-**Release:** 3.1.0  
+**Release:** 3.2.0  
 **Author:** Cisik  
 **Target:** Windows 11 x64  
-**Deliverable:** LogicFlow-Setup.exe; LogicFlow-v3.1-Complete.zip
+**Deliverable:** LogicFlow-Setup.exe and GitHub source
 
 ## Product
 
 Per-user folder organizer with an Electron desktop window, compiled Tailwind
 styles, native folder pickers and a PowerShell worker. This replaces the prior
 Windows Forms interface. It is a desktop app, not a Flask server or website.
+
+## Run Now added in 3.2
+
+Run Now performs one bounded batch with the existing 30-second readiness check,
+then stops. It has a cancellable checking phase, a completion summary, and excludes
+items arriving after the first check. Start automatic remains a separate choice.
+Both completion and cancellation clear scan timers and leave the app paused.
 
 ## Rule transfer added in 3.1
 
@@ -34,7 +41,8 @@ The optional original-rules JSON is supplied separately, never auto-loaded.
 
 ## Non-negotiable behavior
 
-Only immediate watch-folder items are enumerated every 30 seconds. Never recurse
+Only immediate watch-folder items are enumerated. Automatic mode checks every
+30 seconds; Run Now performs two readiness checks for a single batch and stops. Never recurse
 or reorganize destination contents. Folders move intact. Exclusions win. Custom
 rules precede extensions. Ambiguous group/date matches go to review. Keep stable
 observations, exclusive file availability checks, numbered collisions, history,

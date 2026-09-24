@@ -5,7 +5,8 @@ class Worker {
   constructor(script, onFailure=()=>{}) {
     const executable = process.platform==='win32' ? path.join(process.env.SystemRoot || 'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe') : (process.env.LOGICFLOW_PWSH || 'pwsh');
     this.queue=[]; this.failed=null;
-    this.child=spawn(executable,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',script],{windowsHide:true,stdio:['pipe','pipe','pipe']});
+    // Disable PowerShell 7 telemetry in the local folder service.
+    this.child=spawn(executable,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',script],{windowsHide:true,stdio:['pipe','pipe','pipe'],env:{...process.env,POWERSHELL_TELEMETRY_OPTOUT:'1'}});
     const fail=error=>{if(this.failed)return;this.failed=error;for(const p of this.queue.splice(0))p.reject(error);onFailure(error);};
     readline.createInterface({input:this.child.stdout}).on('line',line=>{
       const next=this.queue.shift(); if(!next)return;

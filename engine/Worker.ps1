@@ -7,6 +7,7 @@ $ErrorActionPreference='Stop'
 $lock=New-Object Threading.Mutex($false,'Local\LogicFlow')
 if(!$lock.WaitOne(0)){[Console]::Error.WriteLine('Exit the other copy of LogicFlow first.');exit 1}
 $observed=@{}
+$oneTime=$null
 while($null -ne ($line=[Console]::ReadLine())) {
     try {
         $request=$line | ConvertFrom-Json
@@ -17,9 +18,25 @@ while($null -ne ($line=[Console]::ReadLine())) {
             'preview' {
                 $result=@(Get-Preview $c $c.WatchFolder | Select-Object Name,Type,Destination,Reason,Folder)
             }
-            'reset' {$observed=@{};$result=$true}
-            'initialize' {Initialize-Structure $c $c.WatchFolder;$observed=@{};$result=$true}
+            'reset' {$observed=@{};$oneTime=$null;$result=$true}
+            'initialize' {Initialize-Structure $c $c.WatchFolder;$observed=@{};$oneTime=$null;$result=$true}
             'cycle' {$result=Invoke-Sort $c $c.WatchFolder $observed $request.log}
+            'prepare-once' {
+                $observed=@{};$oneTime=$null
+                # Empty observations guarantee this first check cannot move anything.
+                $first=Invoke-Sort $c $c.WatchFolder $observed $request.log
+                $paths=@{};foreach($key in $observed.Keys){$paths[$key]=$true}
+                $oneTime=@{Paths=$paths;Count=$paths.Count;ReadyAt=[datetime]::UtcNow.AddSeconds(30)}
+                $result=@{Candidates=$paths.Count;WaitMs=30000}
+            }
+            'finish-once' {
+                if($null -eq $oneTime){throw 'There is no one-time run waiting to finish.'}
+                if([datetime]::UtcNow -lt $oneTime.ReadyAt){throw 'The file readiness check has not finished yet.'}
+                try {
+                    $pass=Invoke-Sort $c $c.WatchFolder $observed $request.log $oneTime.Paths
+                    $result=@{Moved=$pass.Moved;Errors=$pass.Errors;Skipped=($oneTime.Count-$pass.Moved-$pass.Errors)}
+                } finally {$observed=@{};$oneTime=$null}
+            }
             'history' {
                 $result=@()
                 if(Test-Path -LiteralPath $request.log) {

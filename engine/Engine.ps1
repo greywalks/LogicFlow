@@ -149,8 +149,10 @@ function Save-Config($Config,[string]$Path) {
 function Write-History([string]$Log,[string]$Status,[string]$Source,[string]$Destination,[string]$Detail) {
     [pscustomobject]@{Time=(Get-Date).ToString('o');Status=$Status;Source=$Source;Destination=$Destination;Detail=$Detail} | ConvertTo-Json -Compress | Add-Content -LiteralPath $Log -Encoding UTF8 -ErrorAction Stop
 }
-function Invoke-Sort($Config,[string]$WatchFolder,[hashtable]$Observed,[string]$Log) {
-    $rows=@(Get-Preview $Config $WatchFolder); $now=[datetime]::UtcNow; $present=@{}; $moved=0; $errors=0
+function Invoke-Sort($Config,[string]$WatchFolder,[hashtable]$Observed,[string]$Log,[hashtable]$OnlyPaths=$null) {
+    # A one-time run is limited to the items present when its readiness check began.
+    $rows=@(Get-Preview $Config $WatchFolder | Where-Object {$null -eq $OnlyPaths -or $OnlyPaths.ContainsKey($_.Item.FullName)})
+    $now=[datetime]::UtcNow; $present=@{}; $moved=0; $errors=0
     foreach ($row in $rows) {
         $item=$row.Item; $source=$item.FullName; $present[$source]=$true
         $fingerprint="$($item.LastWriteTimeUtc.Ticks):$($item.CreationTimeUtc.Ticks):$($item.Length)"
@@ -164,7 +166,7 @@ function Invoke-Sort($Config,[string]$WatchFolder,[hashtable]$Observed,[string]$
             if ($item.PSIsContainer -and (Full-Path $item.Parent.FullName) -ne (Full-Path $WatchFolder)) {throw 'Folder is not directly on watched folder.'}
             $fresh=Get-Item -LiteralPath $source -Force -ErrorAction Stop
             if (Is-Protected $fresh $Config $WatchFolder) {continue}
-            if ($fresh.LastWriteTimeUtc.Ticks -ne $item.LastWriteTimeUtc.Ticks) {continue}
+            if ($fresh.PSIsContainer -ne $item.PSIsContainer -or $fresh.LastWriteTimeUtc.Ticks -ne $item.LastWriteTimeUtc.Ticks -or $fresh.CreationTimeUtc.Ticks -ne $item.CreationTimeUtc.Ticks -or $fresh.Length -ne $item.Length) {continue}
             if (!$item.PSIsContainer) {
                 $stream=[IO.File]::Open($source,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::None)
                 $stream.Dispose()

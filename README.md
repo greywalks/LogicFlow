@@ -1,4 +1,4 @@
-# LogicFlow 3.1
+# LogicFlow 3.2
 
 **Author: Cisik** · Windows 11, 64-bit
 
@@ -7,7 +7,7 @@
 1. Exit any open copy of LogicFlow using its app or notification-area menu.
 2. Double-click **LogicFlow-Setup.exe** and follow the installer.
 3. Open LogicFlow, choose your folders and finish setup.
-4. Review the preview, then select **Start organizing**.
+4. Review the preview, then select **Run Now** for one batch or **Start automatic** for ongoing checks.
 
 No command prompt, Node.js, Python, Flask server or separate browser is needed.
 The application includes its own desktop interface. It uses the Windows
@@ -26,7 +26,7 @@ is where unmatched items go for review. Use separate output folders on the same
 drive as the watched folder. Cross-drive and network output folders are not
 supported. Existing content is not relocated when you change these choices.
 
-Only items directly inside the watched folder are checked, every 30 seconds.
+Only items directly inside the watched folder are checked.
 LogicFlow never scans inside subfolders or reorganizes your output folders.
 Folders move as complete units with everything inside them preserved.
 
@@ -71,11 +71,30 @@ clears these selections so you can choose folders at the new location.
 Output folders and previously used output locations are protected automatically.
 Renaming a folder you excluded requires selecting its new name.
 
+## Run once or keep organizing
+
+**Run Now** organizes one batch, then returns to Paused. It works without enabling
+automatic scanning. After reviewing the preview and confirming the run, LogicFlow
+checks the batch for changes for 30 seconds, moves ready items once, and stops.
+Items added after that first check are left for a later run. Changed or locked
+items stay in place; the completion message reports moved, skipped and failed
+items. Choose **Cancel run** during the check to stop it before anything moves.
+An empty batch finishes immediately.
+
+**Start automatic** checks every 30 seconds until you choose **Pause automatic**.
+Using Run Now while automatic organizing is active turns automatic organizing
+off and leaves it off after the batch. Paused mode has no scheduled folder scans.
+Every new launch starts paused; neither mode starts automatically.
+
+If settings changed or no preview is available, the first click saves and updates
+the preview. Review the destinations, then click Run Now or Start automatic again.
+
 ## Preview, pause and activity
 
 Setup starts paused. Preview does not move files. Changes pause organizing;
 save and preview before starting. Files must be seen unchanged on two checks
-at least 30 seconds apart before moving. Locked files are retried. Folder
+at least 30 seconds apart before moving. Automatic mode retries locked files;
+Run Now leaves them for a later run. Folder
 readiness uses only the folder's own metadata: pause while copying into a folder.
 
 Files and folders are never overwritten or merged. Name collisions receive a
