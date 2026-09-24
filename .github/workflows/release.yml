@@ -1,0 +1,88 @@
+name: Build and publish Windows installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release.yml'
+      - 'package.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: logicflow-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Test application and Windows worker
+        run: npm test
+      - name: Test PowerShell engine
+        shell: powershell
+        run: |
+          & .\engine\SelfTest.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\engine\RunOnceTest.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Locate NSIS
+        shell: pwsh
+        run: |
+          $compiler = Join-Path ${env:ProgramFiles(x86)} 'NSIS\makensis.exe'
+          if (!(Test-Path $compiler)) {
+            choco install nsis --no-progress -y
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          if (!(Test-Path $compiler)) { throw 'NSIS compiler is missing' }
+          "MAKENSIS=$compiler" >> $env:GITHUB_ENV
+      - name: Build Windows installer
+        run: npm run dist
+      - name: Prepare download and checksum
+        shell: pwsh
+        run: |
+          if (!(Test-Path release/LogicFlow-Setup.exe)) { throw 'Installer is missing' }
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          "RELEASE_TAG=v$version" >> $env:GITHUB_ENV
+          $hash = (Get-FileHash release/LogicFlow-Setup.exe -Algorithm SHA256).Hash.ToLower()
+          "$hash  LogicFlow-Setup.exe" | Set-Content release/SHA256SUMS.txt -Encoding ascii
+          @"
+          Download **LogicFlow-Setup.exe** below and double-click it to install.
+
+          Windows 11, 64-bit. No developer tools are required.
+          Includes rule import/export and the one-time Run Now action.
+          Existing settings are preserved. Exit LogicFlow before installing an update.
+
+          This installer is unsigned. Windows may display an unknown-publisher warning.
+          Automated Windows worker and engine tests passed before packaging.
+          Interactive installation has not been manually verified.
+
+          Built from commit $env:GITHUB_SHA.
+          "@ | Set-Content release/RELEASE-NOTES.md
+      - name: Preserve build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogicFlow-Windows-installer
+          path: |
+            release/LogicFlow-Setup.exe
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY 2>$null
+          if ($LASTEXITCODE -eq 0) { throw "Release $env:RELEASE_TAG already exists; increment the version before publishing again." }
+          gh release create $env:RELEASE_TAG release/LogicFlow-Setup.exe release/SHA256SUMS.txt --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "LogicFlow $env:RELEASE_TAG" --notes-file release/RELEASE-NOTES.md --latest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
